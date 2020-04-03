@@ -27,6 +27,8 @@
 #define focusStep     5
 #define rgainStep     10
 #define bgainStep     10
+
+//teste3
 typedef struct
 {
    int id;
