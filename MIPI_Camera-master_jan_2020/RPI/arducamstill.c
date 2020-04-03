@@ -22,7 +22,7 @@
 #define S     6
 #define A     7
 #define D     8
-//teste
+
 #define exposureStep  50
 #define focusStep     5
 #define rgainStep     10
@@ -126,47 +126,6 @@ int resetGlobalParameter(CAMERA_INSTANCE camera_instance, GLOBAL_VAL* globalPara
     globalParam -> frameCnt = 0;
     globalParam -> key = 0;
     
-}
-
-// ROTINA DE Escrita
-struct reg {
-    uint16_t address;
-    uint16_t value;
-};
-
-struct reg regs[] = {
-    {0x3006, 0x08}, //Strobe register as Output
-    {0x3921, 0x00}, //Strobe register
-    {0x3922, 0x00}, //Strobe register
-    {0x3923, 0x00}, //Strobe register
-    {0x3924, 0x05}, //Strobe register
-    {0x3925, 0x00}, //Strobe register
-    {0x3926, 0x00}, //Strobe register
-    {0x3927, 0x00}, //Strobe register
-    {0x3928, 0x1A}, //Strobe register
-    {0x3912, 0xFF}, //Strobe register
-    {0x3913, 0xFF}, //Strobe register
-    {0x3501, 0xFF}, //Exposure register
-    {0x3502, 0xFF}, //Exposure register
-    {0x3509, 0x05}, //Long Gain register
-    {0x3009, 0x00}, // Strobe Output Value (?)
-    {0x391A, 0x00}, // Strobe Output Value (?)
-    {0x3920, 0xA5} //Strobe register
-};
-
-static const int regs_size = sizeof(regs) / sizeof(regs[0]);
-
-
-int write_regs(CAMERA_INSTANCE camera_instance, struct reg regs[], int length){
-    int status = 0;
-    for(int i = 0; i < length; i++){
-	uint16_t valueRegs = 0;
-        if (arducam_write_sensor_reg(camera_instance, regs[i].address, regs[i].value)) {
-            LOG("Failed to write register: 0x%02X, 0x%02X.", regs[i].address, regs[i].value);
-            status += 1;
-        }
-    }
-    return status;
 }
 
 int get_key_board_from_termios()
@@ -390,102 +349,6 @@ int main(int argc, char **argv) {
             LOG("Failed to start raw data callback.");
             return -1;
         }
-
-    //EDITADO EDUARDo - Escreve Nos Registradores de Strobe, Exposure e Gain
-    write_regs(camera_instance, regs, regs_size);
-
-    //Editado Eduardo - Faz a leitura dos registradores (Só consegui fazer a leitura em sequências)
-    struct reg0 {
-    uint16_t address0;
-    };
-    struct reg0 regs0[] = {
-    {0x3900},
-    {0x3901},
-    {0x3902},
-    {0x3903},
-    {0x3904}
-    };
-    for(int l = 0; l < 0x5; l++){
-    uint16_t value_0 = 0;
-        if (arducam_read_sensor_reg(camera_instance, regs0[l].address0, &value_0)) {
-            LOG("Failed to read register: 0x%02X, 0x%02X.", regs0[l].address0, value_0);
-        } else {
-            LOG("Read 0x%02X = 0x%02X", regs0[l].address0, value_0);
-        }
-    }
-
-    //Editado Eduardo - Faz a leitura dos registradores (Só consegui fazer a leitura em sequências)
-    struct reg1 {
-    uint16_t address1;
-    };
-    struct reg1 regs1[] = {
-    {0x3009},
-    {0x3910},
-    {0x3911},
-    {0x3912},
-    {0x3913},
-    {0x3914},
-    {0x3915},
-    {0x3916},
-    {0x3917},
-    {0x3918},
-    {0x3919},
-    {0x391A},
-    {0x391B},
-    {0x391C},
-    {0x391D},
-    };
-    for(int j = 0; j < 0xF; j++){
-    uint16_t value_ = 0;
-        if (arducam_read_sensor_reg(camera_instance, regs1[j].address1, &value_)) {
-            LOG("Failed to read register: 0x%02X, 0x%02X.", regs1[j].address1, value_);
-        } else {
-            LOG("Read 0x%02X = 0x%02X", regs1[j].address1, value_);
-        }
-    }
-
-    //Editado Eduardo - Faz a leitura dos registradores (Só consegui fazer a leitura em sequências)
-    struct reg2 {
-    uint16_t address2;
-    };
-    struct reg2 regs2[] = {
-    {0x3920},
-    {0x3921},
-    {0x3922},
-    {0x3923},
-    {0x3924},
-    {0x3925},
-    {0x3926},
-    {0x3927},
-    {0x3928},
-    {0x3929},
-    {0x392A},
-    {0x392B},
-    {0x392C},
-    {0x392D},
-    {0x392E},
-    {0x392F},
-    {0x3930},
-    {0x3931},
-    {0x3932},
-    {0x3933}
-    };
-    for(int k = 0; k < 0x14; k++){
-    uint16_t value_2 = 0;
-        if (arducam_read_sensor_reg(camera_instance, regs2[k].address2, &value_2)) {
-            LOG("Failed to read register: 0x%02X, 0x%02X.", regs2[k].address2, value_2);
-        } else {
-            LOG("Read 0x%02X = 0x%02X", regs2[k].address2, value_2);
-        }
-    }
-   
-    uint16_t value_3006 = 0;
-        if (arducam_read_sensor_reg(camera_instance, 0x3006, &value_3006)) {
-            LOG("Failed to read register: 0x3006, 0x%02X.", value_3006);
-        } else {
-            LOG("Read 0x3006 = 0x%02X", value_3006);
-        }
-
 
  printCurrentMode(camera_instance);
  processData.camera_instance = camera_instance;
