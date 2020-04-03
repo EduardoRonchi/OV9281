@@ -22,7 +22,7 @@
 #define S     6
 #define A     7
 #define D     8
-
+//teste
 #define exposureStep  50
 #define focusStep     5
 #define rgainStep     10
